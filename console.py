@@ -16,7 +16,7 @@ class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
-    prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
+    prompt = '(hbnb) '
 
     classes = {
                'BaseModel': BaseModel, 'User': User, 'Place': Place,
@@ -29,11 +29,6 @@ class HBNBCommand(cmd.Cmd):
              'max_guest': int, 'price_by_night': int,
              'latitude': float, 'longitude': float
             }
-
-    def preloop(self):
-        """Prints if isatty is false"""
-        if not sys.__stdin__.isatty():
-            print('(hbnb)')
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
@@ -86,12 +81,6 @@ class HBNBCommand(cmd.Cmd):
         finally:
             return line
 
-    def postcmd(self, stop, line):
-        """Prints if isatty is false"""
-        if not sys.__stdin__.isatty():
-            print('(hbnb) ', end='')
-        return stop
-
     def do_quit(self, command):
         """ Method to exit the HBNB console"""
         exit()
@@ -115,16 +104,38 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+        list = args.split()
+        cls = list[0]
+        kwargs = {}
+        for para in list[1:]:
+            if "=" in para:
+                k, v = para.split("=")
+                if v.startswith('"') and v.endswith('"'):
+                    v = v[1:-1].replace('_', ' ').replace('"', r'\"')
+                elif not v.startswith('"') and not v.endswith('"'):
+                    if v.isdigit():
+                        v = int(v)
+                    else:
+                        if "." in v:
+                            v = float(v)
+                        else:
+                            continue
+                else:
+                    continue
+
+                kwargs[k] = v
+
+        if not cls:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+        elif cls not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
+
+        new_instance = HBNBCommand.classes[cls](**kwargs)
+        storage.new(new_instance)
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
