@@ -3,7 +3,6 @@
 This script defines a State class that inherits from the BaseModel class.
 """
 from models.base_model import BaseModel, Base
-from models.city import City
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
@@ -21,7 +20,7 @@ class State(BaseModel, Base):
     @property
     def cities(self):
         from models.engine.file_storage import FileStorage
-
+        from models.city import City
         file_storage = FileStorage()
         file_storage.reload()
         cities = []
