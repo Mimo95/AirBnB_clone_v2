@@ -46,6 +46,18 @@ class TestConsoleCommands(unittest.TestCase):
             HBNBCommand().onecmd("create Review place_id=\"111\" user_id=\"222\" text=\"Great place!\"")
             output = mock_stdout.getvalue().strip()
             self.assertTrue(len(output) == 36)  
+    
+    def test_do_all_no_args(self):
+        """Test do_all method without arguments"""
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd("all")
+            output = mock_stdout.getvalue().strip()
+
+    def test_do_all_with_args(self):
+        """Test do_all method with arguments"""
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd("all User")
+            output = mock_stdout.getvalue().strip()
 
 if __name__ == '__main__':
     unittest.main()
